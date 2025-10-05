@@ -22,10 +22,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Security & middleware
+const allowedOrigins = [
+  process.env.CLIENT_URL, // your main frontend (e.g., deployed)
+  'http://localhost:5173' // local dev frontend
+];
 app.use(helmet());
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: allowedOrigins,
   credentials: true
 }));
 
