@@ -2,8 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const cookieParser = require('cookie-parser');
+const fs = require('fs');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
@@ -14,7 +15,10 @@ const reviewRoutes = require('./routes/review');
 const wishlistRoutes = require('./routes/wishList');
 
 const app = express();
-console.log(process.env.MONGO_URI)
+const __dirnameResolved = path.resolve();
+
+// Connect to MongoDB
+console.log(process.env.MONGO_URI);
 connectDB();
 
 // Body parsers
@@ -23,26 +27,22 @@ app.use(express.urlencoded({ extended: true }));
 
 // Security & middleware
 const allowedOrigins = [
-  process.env.CLIENT_URL, // your main frontend (e.g., deployed)
-  // 'http://localhost:5173',
-  "https://mern-ecommerce-frontend-15px.onrender.com" // local dev frontend
+  process.env.CLIENT_URL,
+  "https://mern-ecommerce-frontend-15px.onrender.com"
 ];
 app.use(helmet());
 app.use(cookieParser());
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // Serve uploads with CORS headers
 app.use(
-  "/uploads",
+  '/uploads',
   (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", process.env.CLIENT_URL || "*");
-    res.header("Cross-Origin-Resource-Policy", "cross-origin");
+    res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || '*');
+    res.header('Cross-Origin-Resource-Policy', 'cross-origin');
     next();
   },
-  express.static(path.join(__dirname, "uploads"))
+  express.static(path.join(__dirnameResolved, 'uploads'))
 );
 
 // API routes
@@ -56,5 +56,14 @@ app.use('/api/wishlist', wishlistRoutes);
 // Rate limiting
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));
 
+// Serve static files from frontend build
+app.use(express.static(path.join(__dirnameResolved, 'client1/dist')));
+
+// Catch-all route: serve index.html for non-API routes (client-side routing)
+app.get(/^(?!\/api).*$/, (req, res) => {
+  res.sendFile(path.join(__dirnameResolved, 'client1/dist/index.html'));
+});
+
+// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log('Server running on', PORT));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
