@@ -65,8 +65,8 @@ exports.list = async (req, res) => {
 
     const q = {};
     if (search) q.$text = { $search: search };
-    if (category) q.category = category;
-    if (brand) q.brand = brand;
+    if (category) q.category = { $regex: category, $options: 'i' };
+    if (brand) q.brand = { $regex: brand, $options: 'i' };
     if (min || max) q.price = {};
     if (min) q.price.$gte = Number(min);
     if (max) q.price.$lte = Number(max);
