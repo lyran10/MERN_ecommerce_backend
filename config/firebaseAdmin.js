@@ -9,7 +9,8 @@ function initFirebaseAdmin(){
     serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
   } else {
     // expects file ./serviceAccountKey.json (downloaded from Firebase console)
-    serviceAccount = require('../serviceAccountKey.json');
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
   }
 
   admin.initializeApp({
