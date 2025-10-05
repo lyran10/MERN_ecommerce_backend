@@ -1,6 +1,6 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
-const Wishlist = require("../models/WishList");
+const Wishlist = require("../models/wishList");
 const User = require("../models/user");
 const Review = require("../models/review");
 const mongoose = require("mongoose");
