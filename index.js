@@ -24,7 +24,8 @@ app.use(express.urlencoded({ extended: true }));
 // Security & middleware
 const allowedOrigins = [
   process.env.CLIENT_URL, // your main frontend (e.g., deployed)
-  'http://localhost:5173' // local dev frontend
+  // 'http://localhost:5173',
+  "https://mern-ecommerce-frontend-15px.onrender.com" // local dev frontend
 ];
 app.use(helmet());
 app.use(cookieParser());
